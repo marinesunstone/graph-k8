@@ -16,15 +16,16 @@ export const Entities: Record<
   StepEntityMetadata
 > = {
   ACCOUNT: {
-    resourceName: 'Account',
-    _type: 'acme_account',
-    _class: ['Account'],
+    resourceName: 'Finding',
+    _type: 'policyReport',
+    _class: ['Finding'],
     schema: {
       properties: {
-        mfaEnabled: { type: 'boolean' },
-        manager: { type: 'string' },
+        policy: { type: 'string' },
+        message: { type: 'string' },
+        result: { type: 'string' },
       },
-      required: ['mfaEnabled', 'manager'],
+      required: ['message'],
     },
   },
   GROUP: {

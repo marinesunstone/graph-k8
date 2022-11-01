@@ -16,43 +16,30 @@ export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
  * resources.
  */
 export class APIClient {
-  constructor(readonly config: IntegrationConfig) {}
+  private BASE_URL = 'https://api.github.com/repos/SunStone-Secure-LLC/compliance/actions';
+  constructor(
+    readonly config: IntegrationConfig,
+    readonly logger: IntegrationLogger,
+  ) {}
+  
+public async getPolicyReport(): Promise<PolicyReport> {
+const endpoint = '/artifacts';
+const response = await fetch(this.BASE_URL + endpoint, {
+  headers: {
+    Authorization: `Bearer ${this.config.accessToken}`,
+  },
+});
+// If the response is not ok, we should handle the error
+if (!response.ok) {
+  this.handleApiError(response, this.BASE_URL + endpoint);
+}
 
-  public async verifyAuthentication(): Promise<void> {
-    // TODO make the most light-weight request possible to validate
-    // authentication works with the provided credentials, throw an err if
-    // authentication fails
-    const request = new Promise<void>((resolve, reject) => {
-      http.get(
-        {
-          hostname: 'localhost',
-          port: 443,
-          path: '/api/v1/some/endpoint?limit=1',
-          agent: false,
-          timeout: 10,
-        },
-        (res) => {
-          if (res.statusCode !== 200) {
-            reject(new Error('Provider authentication failed'));
-          } else {
-            resolve();
-          }
-        },
-      );
-    });
+return (await response.json()) as PolicyReport;
+}
 
-    try {
-      await request;
-    } catch (err) {
-      throw new IntegrationProviderAuthenticationError({
-        cause: err,
-        endpoint: 'https://localhost/api/v1/some/endpoint?limit=1',
-        status: err.status,
-        statusText: err.statusText,
-      });
-    }
-  }
-
+  
+  
+  
   /**
    * Iterates each user resource in the provider.
    *
@@ -119,6 +106,9 @@ export class APIClient {
   }
 }
 
-export function createAPIClient(config: IntegrationConfig): APIClient {
-  return new APIClient(config);
+export function createAPIClient(
+  config: IntegrationConfig,
+  logger: IntegrationLogger,
+): APIClient {
+  return new APIClient(config, logger);
 }
