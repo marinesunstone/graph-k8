@@ -6,14 +6,14 @@ import { PolicyReport } from '../../types';
 
 import { Entities } from '../constants';
 
-export function createAccountEntity(results: PolicyReport): Entity {
+export function createReportEntity(results: PolicyReport): Entity {
   return createIntegrationEntity({
     entityData: {
-      source: 'account',
+      source: 'report',
       assign: {
-        _key: 'unique-account-id',
-        _type: Entities.ACCOUNT._type,
-        _class: Entities.ACCOUNT._class,
+        _key: 'unique-report-id',
+        _type: Entities.REPORT._type,
+        _class: Entities.REPORT._class,
         policy: results.results.policy,
         message: results.results.message,
         result: results.results.result,

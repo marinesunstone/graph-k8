@@ -1,5 +1,5 @@
-import { accountSteps } from './account';
+import { reportSteps } from './report';
 
-const integrationSteps = [...accountSteps];
+const integrationSteps = [...reportSteps];
 
 export { integrationSteps };

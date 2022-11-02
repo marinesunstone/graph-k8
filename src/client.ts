@@ -1,7 +1,7 @@
 import http from 'http';
 
 import { IntegrationProviderAuthenticationError } from '@jupiterone/integration-sdk-core';
-
+import fetch from 'node-fetch';
 import { IntegrationConfig } from './config';
 import { AcmeUser, AcmeGroup } from './types';
 
@@ -16,30 +16,62 @@ export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
  * resources.
  */
 export class APIClient {
-  private BASE_URL = 'https://api.github.com/repos/SunStone-Secure-LLC/compliance/actions';
+  private BASE_URL =
+    'https://api.github.com/repos/SunStone-Secure-LLC/compliance/actions';
   constructor(
     readonly config: IntegrationConfig,
     readonly logger: IntegrationLogger,
   ) {}
-  
-public async getPolicyReport(): Promise<PolicyReport> {
-const endpoint = '/artifacts';
-const response = await fetch(this.BASE_URL + endpoint, {
-  headers: {
-    Authorization: `Bearer ${this.config.accessToken}`,
-  },
-});
-// If the response is not ok, we should handle the error
-if (!response.ok) {
-  this.handleApiError(response, this.BASE_URL + endpoint);
-}
 
-return (await response.json()) as PolicyReport;
-}
+  public async getPolicyReport(Artifacts): Promise<PolicyReport> {
+    const res = await fetch(this.BASE_URL + '/artifacts', {
+      headers: {
+        Authorization: `Bearer ${this.config.accessToken}`,
+      },
+    });
+    // If the response is not ok, we should handle the error
+    if (!res.ok) {
+      this.handleApiError(res, this.BASE_URL + '/artifacts');
+    }
+    const artifacts = await res.json();
+    const lastReport = artifacts.artifacts[0].url;
 
-  
-  
-  
+    const endpoint = lastReport + '/zip';
+    const response = await fetch(endpoint, {
+      headers: {
+        Authorization: `Bearer ${this.config.accessToken}`,
+      },
+    });
+    // If the response is not ok, we should handle the error
+    if (!response.ok) {
+      this.handleApiError(response, endpoint);
+    }
+    const report = await response;
+    return report as PolicyReport;
+  }
+
+  private handleApiError(err: any, endpoint: string): void {
+    if (err.status === 401) {
+      throw new IntegrationProviderAuthenticationError({
+        endpoint: endpoint,
+        status: err.status,
+        statusText: err.statusText,
+      });
+    } else if (err.status === 403) {
+      throw new IntegrationProviderAuthorizationError({
+        endpoint: endpoint,
+        status: err.status,
+        statusText: err.statusText,
+      });
+    } else {
+      throw new IntegrationProviderAPIError({
+        endpoint: endpoint,
+        status: err.status,
+        statusText: err.statusText,
+      });
+    }
+  }
+
   /**
    * Iterates each user resource in the provider.
    *
