@@ -17,37 +17,33 @@ export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
  */
 export class APIClient {
   private BASE_URL =
-    'https://api.github.com/repos/SunStone-Secure-LLC/compliance/actions';
+    'https://api.github.com/repos/SunStone-Secure-LLC/compliance';
   constructor(
     readonly config: IntegrationConfig,
     readonly logger: IntegrationLogger,
   ) {}
 
-  public async getPolicyReport(Artifacts): Promise<PolicyReport> {
-    const res = await fetch(this.BASE_URL + '/artifacts', {
-      headers: {
-        Authorization: `Bearer ${this.config.accessToken}`,
+  public async getPolicyReport(): Promise<PolicyReport> {
+    const res = await fetch(
+      this.BASE_URL + '/contents/templates/policy-report/res.json',
+      {
+        headers: {
+          Authorization: `Bearer ${this.config.accessToken}`,
+        },
       },
-    });
+    );
     // If the response is not ok, we should handle the error
     if (!res.ok) {
-      this.handleApiError(res, this.BASE_URL + '/artifacts');
+      this.handleApiError(
+        res,
+        this.BASE_URL + '/contents/templates/policy-report/res.json',
+      );
     }
-    const artifacts = await res.json();
-    const lastReport = artifacts.artifacts[0].url;
-
-    const endpoint = lastReport + '/zip';
-    const response = await fetch(endpoint, {
-      headers: {
-        Authorization: `Bearer ${this.config.accessToken}`,
-      },
-    });
-    // If the response is not ok, we should handle the error
-    if (!response.ok) {
-      this.handleApiError(response, endpoint);
-    }
-    const report = await response;
-    return report as PolicyReport;
+    const file = await res.json();
+    const content = file.content;
+    const decode = atob(content);
+    console.log('CONTENT', decode);
+    return file as PolicyReport;
   }
 
   private handleApiError(err: any, endpoint: string): void {
