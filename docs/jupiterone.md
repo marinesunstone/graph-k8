@@ -97,7 +97,7 @@ The following entities are created:
 
 | Resources | Entity `_type` | Entity `_class` |
 | --------- | -------------- | --------------- |
-| Finding   | `policyReport` | `Finding`       |
+| Finding   | `policyReport` | `ControlPolicy` |
 
 <!--
 ********************************************************************************

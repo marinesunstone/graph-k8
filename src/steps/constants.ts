@@ -16,15 +16,7 @@ export const Entities: Record<'REPORT' | 'GROUP' | 'USER', StepEntityMetadata> =
     REPORT: {
       resourceName: 'Finding',
       _type: 'policyReport',
-      _class: ['Finding'],
-      schema: {
-        properties: {
-          policy: { type: 'string' },
-          message: { type: 'string' },
-          result: { type: 'string' },
-        },
-        required: ['message'],
-      },
+      _class: ['ControlPolicy'],
     },
     GROUP: {
       resourceName: 'UserGroup',

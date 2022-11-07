@@ -15,6 +15,7 @@
   "scripts": {
     "start": "j1-integration collect",
     "graph": "j1-integration visualize",
+    "upload": "j1-integration run --integrationInstanceId 86d01502-c515-4ab6-9646-6fdec14491e7 --disable-schema-validation",
     "graph:types": "j1-integration visualize-types",
     "graph:spec": "j1-integration visualize-types --project-path docs/spec --output-file ./.j1-integration/types-graph/index.spec.html",
     "graph:dependencies": "j1-integration visualize-dependencies",

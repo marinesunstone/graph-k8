@@ -41,9 +41,8 @@ export class APIClient {
     }
     const file = await res.json();
     const content = file.content;
-    const decode = atob(content);
-    console.log('CONTENT', decode);
-    return file as PolicyReport;
+    const decodedFile = atob(content);
+    return decodedFile as PolicyReport;
   }
 
   private handleApiError(err: any, endpoint: string): void {
