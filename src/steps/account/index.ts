@@ -8,15 +8,12 @@ import {
 
 import { createAPIClient } from '../../client';
 import { IntegrationConfig } from '../../config';
-import { AcmeGroup } from '../../types';
-import { ACCOUNT_ENTITY_KEY } from '../account';
+import { ASSESSMENT } from '../../types';
+import { ASSESSMENT_ENTITY_KEY } from '../assessment';
 import { Entities, Steps, Relationships } from '../constants';
 import {
-  createAccountGroupRelationship,
-  createAccountUserRelationship,
-  createGroupEntity,
-  createGroupUserRelationship,
-  createUserEntity,
+  createAssessmentFindingRelationship,
+  createAssessmentEntity,
 } from './converter';
 
 export async function fetchUsers({

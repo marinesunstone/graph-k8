@@ -3,7 +3,7 @@ import http from 'http';
 import { IntegrationProviderAuthenticationError } from '@jupiterone/integration-sdk-core';
 import fetch from 'node-fetch';
 import { IntegrationConfig } from './config';
-import { AcmeUser, AcmeGroup } from './types';
+import { PolicyReport } from './types';
 
 export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
 
@@ -42,7 +42,8 @@ export class APIClient {
     const file = await res.json();
     const content = file.content;
     const decodedFile = atob(content);
-    return decodedFile as PolicyReport;
+    const jsonFile = JSON.parse(decodedFile);
+    return jsonFile as PolicyReport;
   }
 
   private handleApiError(err: any, endpoint: string): void {
@@ -72,6 +73,16 @@ export class APIClient {
    *
    * @param iteratee receives each resource to produce entities/relationships
    */
+  public async iterateFindings(
+    items,
+    iteratee: ResourceIteratee<PolicyReport>,
+  ): Promise<void> {
+    const results = items[0].results;
+    for (const result of results) {
+      await iteratee(result);
+    }
+  }
+
   public async iterateUsers(
     iteratee: ResourceIteratee<AcmeUser>,
   ): Promise<void> {
